@@ -1,0 +1,15 @@
+Metadata-Version: 1.0
+Name: dcel
+Version: 0.1.0
+Summary: utilities for managing numerical data files
+Home-page: UNKNOWN
+Author: Angel Yanguas-Gil
+Author-email: angel.yanguas@gmail.com
+License: UNKNOWN
+Download-URL: https://netfiles.uiuc.edu/ayg/www/stuff/dcel-0.1.0.tar.gz
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Environment :: Console
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Utilities
