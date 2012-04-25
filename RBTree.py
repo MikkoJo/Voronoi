@@ -51,8 +51,10 @@ class RBNode(object):
         self.color = color
         self.key = key
         self.value = value
+        self.hedge = None
         self.nonzero = 1
         self.count = 1
+        self.isLeaf = True
 
     def __str__(self):
         return repr(self.key) + ': ' + repr(self.value)

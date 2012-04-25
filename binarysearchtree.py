@@ -139,6 +139,7 @@ class BinarySearchTree(object):
 
 
 
+
         #print parent
         # Put the value in the empty node.
 
