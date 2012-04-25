@@ -138,6 +138,7 @@ class BinarySearchTree(object):
         # Check for new circle events
 
 
+
         #print parent
         # Put the value in the empty node.
 
@@ -145,7 +146,7 @@ class BinarySearchTree(object):
 #            node[:] = [[], [], value]
 #        else:
 #            node[:] = [[], [], value, self._sort_key]
-        self._len += 1
+        #self._len += 1
 
     def minimum(self):
         """
@@ -377,6 +378,33 @@ class BinarySearchTree(object):
             return min(bp1,bp2)
 #        return ((inner_node['break_point'][0][0] - inner_node['break_point'][1][0])/2)
 
+    #Calculate possible circle event, if found return lowest point else None
+    def _get_circle_event(self, site1, site2, site3):
+        x1 = site1['point'][0][0]
+        y1 = site1['point'][0][1]
+        x2 = site2['point'][0][0]
+        y2 = site2['point'][0][1]
+        x3 = site3['point'][0][0]
+        y3 = site3['point'][0][1]
+        a = x2*x2 - x1*x1 + y2*y2 - y1*y1
+        b = x3*x3 - x2*x2 + y3*y3 - y2*y2
+        dx1 = x1 - x2
+        dx2 = x3 - x2
+        dy1 = y2 - y1
+        dy2 = y3 - y2
+
+        k = (a + (2*dx1*b/2*dx2)) * (1/2*dy1 - (2*dx2/4*dx1*dy2))
+        h = (b + 2*dy2*k)/(2*dx2)
+        r = math.sqrt((math.pow(x1-h, 2) + math.pow(y1-k, 2)))
+        # Check converge (www.mail-archive.com/algogeeks@googlegroups.com/msg02478.html)
+        if ((x2-x1)*(y3-y1)) - ((x3-x1)*(y2-y1)) > 0:
+            return (k, h-r)
+        else:
+            return None
+
+
+
+        pass
 try:
     # Try to use the python recipe:
     # <http://code.activestate.com/recipes/277940/>
