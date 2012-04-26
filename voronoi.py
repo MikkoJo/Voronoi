@@ -30,9 +30,9 @@ def parse_input(infile):
 
     return pointArray
 
-def handleSite(site):
+def handleSite(site, sites):
     # insert new site to the beachline
-    beach_line.insert(site)
+    beach_line.insert(site, sites)
 
 if __name__ == '__main__':
     import sys
@@ -57,7 +57,7 @@ if __name__ == '__main__':
             #Check if site event
             if s[1] == None:
                 #print (s)
-                handleSite(s[0])
+                handleSite(s[0], sites)
 #           else:
 #               handleCircle(item)
         except KeyError:

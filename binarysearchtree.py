@@ -83,7 +83,7 @@ class BinarySearchTree(object):
     # Public Methods
     #/////////////////////////////////////////////////////////////////
 
-    def insert(self, item):
+    def insert(self, item, pq):
         """
         Insert the specified item into the BST.
         """
@@ -101,41 +101,108 @@ class BinarySearchTree(object):
         #    sort_key = self._sort_key(value)
         # Walk down the tree until we find an empty node.
         node = self._root
+        traversed = []
         while node and node[_VALUE]['break_point'] is not None:
             #print node
+            # Save parent node
+            #parent = node
+            traversed.append(node)
             if site_x < node[_SORT_KEY](node[_VALUE], site_y):
+                print("left: "),
+                print (site_x < node[_SORT_KEY](node[_VALUE], site_y))
                 node = node[_LEFT]
             else:
+                print(right)
                 node = node[_RIGHT]
         #split the node
         if node == []:
             print ("root")
             node[:] = [[], [], new_value, self._sort_key]
             return
-
+        else:
+            traversed.append(node)
         print (" split node")
         #print node
+        #delete circle event from queue
+        if node[_VALUE]['pointer'] is not None:
+            pq.delete(node[_VALUE]['pointer'])
         left_value = node[_VALUE]
+#        print ("left_value: " + str(left_value))
         hedge1 = Hedge()
         hedge2 = Hedge()
         hedge1.twin = hedge2
         hedge2.twin = hedge1
 #        face1 = Face()
 #        face1.wedge = hedge1
-
+        #grand_parent = parent
         node[_VALUE] = {'point': None, 'break_point' : (left_value['point'], item), 'hedge': hedge1}
+#        print ("left_value: " + str(left_value))
         parent = node
         node = node[_LEFT]
         node[:] = [[], [], left_value, self._sort_key]
+        # Save node for circle event check
+        left1 = left_value['point']
+#        print ("left_value1: " + str(left1[_VALUE]))
+#        print ("left_value1: " + str(left1[_VALUE]['break_point'][0]))
+#        print ("left_value1: " + str(left1))
+
         node = parent[_RIGHT]
         node[:] = [[], [], {'point': None, 'break_point' : (item, left_value['point']), 'hedge': hedge2}, self._sort_key]
         parent = node
+#        print ("left_value: " + str(left_value))
+
         node = node[_LEFT]
         node[:] = [[], [], new_value, self._sort_key]
+        # Save node for circle event check
+        new_node = node
         node = parent[_RIGHT]
         node[:] = [[], [], left_value, self._sort_key]
+        # Save node for circle event check
+        right1 = left1
 
         # Check for new circle events
+        # there has to be a better way to find the triplet
+        traversed_right = traversed[:]
+        # find the leftmost arc of the triplet
+        #print traversed
+        n = traversed.pop()
+#       print ("left_value1: " + str(left1))
+#       print ("new_node: " + str(new_node[_VALUE]['point']))
+        print ("before left")
+        print (n[_VALUE]['break_point'][0])
+        print (left_value['point'])
+        while traversed and n[_VALUE]['break_point'][0] == left_value['point']:
+            #print (n[_VALUE]['break_point'][0])
+            n = traversed.pop()
+            pass
+        if traversed:
+            left2 = n[_VALUE]['break_point'][0]
+            print ("left_value2: " + str(left2))
+            print ("left_value1: " + str(left1))
+            print ("new_node: " + str(new_node[_VALUE]['point']))
+            circle_event = self._get_circle_event(left2, left1, new_node[_VALUE]['point'])
+            if circle_event is not None:
+                left1['pointer'] = circle_event
+
+        # find the rightmost arc of the triplet
+        n = traversed_right.pop()
+        print ("before right")
+        print (n[_VALUE]['break_point'][1])
+        print (left_value['point'])
+        while traversed_right and n[_VALUE]['break_point'][1] == left_value['point']:
+            n = traversed_right.pop()
+            pass
+        if traversed_right:
+            right2 = n[_VALUE]['break_point'][1]
+            print ("right_value2: " + str(right2))
+            print ("right_value1: " + str(right1))
+            print ("new_node: " + str(new_node[_VALUE]['point']))
+#            circle_event = self._get_circle_event(right2, right1, new_node)
+            circle_event = self._get_circle_event(new_node[_VALUE]['point'], right1, right2)
+            if circle_event is not None:
+                right1['pointer'] = circle_event
+
+        #if(self._get_circle_event(left2, left1, new_node)) is not None:
 
 
 
@@ -373,6 +440,7 @@ class BinarySearchTree(object):
         determinant = b*b - 4 *a*c
         bp1 = (-b + math.sqrt(determinant))/2*a
         bp2 = (-b - math.sqrt(determinant))/2*a
+        print(max(bp1,bp2))
         if y1 < y2:
             return max(bp1, bp2)
         else:
@@ -381,12 +449,22 @@ class BinarySearchTree(object):
 
     #Calculate possible circle event, if found return lowest point else None
     def _get_circle_event(self, site1, site2, site3):
-        x1 = site1['point'][0][0]
-        y1 = site1['point'][0][1]
-        x2 = site2['point'][0][0]
-        y2 = site2['point'][0][1]
-        x3 = site3['point'][0][0]
-        y3 = site3['point'][0][1]
+#        x1 = site1['point'][0][0]
+#        y1 = site1['point'][0][1]
+#        x2 = site2['point'][0][0]
+#        y2 = site2['point'][0][1]
+#        x3 = site3['point'][0][0]
+#        y3 = site3['point'][0][1]
+#        print site1
+        print site2[0]
+        print site3[0]
+        print site1[0]
+        x1 = site1[0]
+        y1 = site1[1]
+        x2 = site2[0]
+        y2 = site2[1]
+        x3 = site3[0]
+        y3 = site3[1]
         a = x2*x2 - x1*x1 + y2*y2 - y1*y1
         b = x3*x3 - x2*x2 + y3*y3 - y2*y2
         dx1 = x1 - x2
