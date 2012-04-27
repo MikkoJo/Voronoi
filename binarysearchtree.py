@@ -144,7 +144,6 @@ class BinarySearchTree(object):
         print ("left_value: " + str(left_value))
         parent = node
         node = node[_LEFT]
-        print ("traveverse" + str(parent == node))
         node[:] = [[], [], parent, left_value, self._sort_key]
         # Save node for circle event check
         left1 = left_value['point']
@@ -210,7 +209,8 @@ class BinarySearchTree(object):
         while traversed_right and n[_VALUE]['break_point'][1] == right1:
             n = traversed_right.pop()
             #pass
-        if traversed_right:
+        #if traversed_right:
+        if True:
             right2 = n[_VALUE]['break_point'][1]
             print ("right_value2: " + str(right2))
             print ("right_value1: " + str(right1))
@@ -238,31 +238,42 @@ class BinarySearchTree(object):
 #            node[:] = [[], [], value, self._sort_key]
         #self._len += 1
     def pred(self, node):
-        print("pred")
+        print("pred" +str(node[_VALUE]['point']))
+        print(node[_PARENT][_VALUE]['break_point'])
+        print(node[_PARENT][_VALUE]['point'])
+        print(node[_PARENT][_VALUE]['hedge'])
         site = node[_VALUE]['point']
         #print(node[_VALUE]['point'] == node[_PARENT][_VALUE]['break_point'][0])
         #node = node[_PARENT]
         #print(node[_VALUE]['point'] == node[_PARENT][_VALUE]['point'])
         while node[_PARENT][_VALUE]['break_point'][0] == site:
-            print("go up" + str(node[_PARENT][_VALUE]['break_point'][1]))
+            print("go up" + str(node[_PARENT][_VALUE]['break_point']))
             node = node[_PARENT]
+        print("insert" + str(node[_VALUE]['break_point']))
+        print("insert" + str(node[_VALUE]['point']))
         node = node[_PARENT][_LEFT]
         #print(node)
         while node[_VALUE]['break_point'] is not None:
-            print("go_down" + str(node[_PARENT][_VALUE]['break_point'][1]))
+            print("go_down" + str(node[_PARENT][_VALUE]['break_point']))
             node = node[_RIGHT]
         #print node[_VALUE]['point']
         print ("return" + str(node[_VALUE]['point']))
+        print(node[_PARENT][_VALUE]['break_point'])
         return node
 
     def succ(self, node):
+        print("succ" +str(node[_VALUE]['point']))
+        print(node[_PARENT][_VALUE]['break_point'])
         site = node[_VALUE]['point']
         #node = node[_PARENT]
         while node[_PARENT][_VALUE]['break_point'][1] == site:
+            print("go up" + str(node[_PARENT][_VALUE]['break_point']))
             node = node[_PARENT]
         node = node[_PARENT][_RIGHT]
         while node[_VALUE]['break_point'] is not None:
+            print("go_down" + str(node[_PARENT][_VALUE]['break_point']))
             node = node[_LEFT]
+        print ("return" + str(node[_VALUE]['point']))
         return node
 
     def minimum(self):

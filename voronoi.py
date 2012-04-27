@@ -46,16 +46,23 @@ def handle_circle(site):
     point = site[0]
     node = site[1]
     print(point)
+    print(node[_VALUE]['break_point'])
     print(node[_VALUE]['point'])
     #remove possible circle events involving this site
     predecessor = beach_line.pred(node)
     successor = beach_line.succ(node)
+    print("pre")
     print(predecessor[_VALUE]['point'])
+    print(predecessor[_PARENT][_VALUE]['break_point'])
+    print("endpre")
     print(successor[_VALUE]['point'])
 
     if predecessor[_VALUE]['pointer'] is not None:
+        print("not None")
+        #print(predecessor[_VALUE]['pointer'])
         sites.delete(predecessor[_VALUE]['pointer'])
         predecessor[_VALUE]['pointer'] = None
+        print(predecessor[_PARENT][_VALUE]['break_point'])
 
     if successor[_VALUE]['pointer'] is not None:
         sites.delete(successor[_VALUE]['pointer'])
@@ -65,7 +72,7 @@ def handle_circle(site):
     #Add breakpoint to the vertex list
     ver = Vertex(point[0], point[1] - r)
     edge_list.vertices.append(ver)
-    #Updated beach_line and add pointers to hedges to new vertex
+    #Update beach_line and add pointers to hedges to new vertex
     parent = node[_PARENT]
     site = node[_VALUE]['point']
     del node[:]
@@ -99,17 +106,29 @@ def handle_circle(site):
     #We always delete the parent
     node = parent
     parent = node[_PARENT]
+    print("before delete" + str(predecessor[_PARENT][_VALUE]['break_point']))
     #Deleted leaf was left child
     if node[_RIGHT]:
         new_right = node[_VALUE]['break_point'][1]
         node[:] = node[_RIGHT]
+        node[_PARENT] = parent
+        print("was right" + str(predecessor[_PARENT][_VALUE]['break_point']))
         while parent[_VALUE]['break_point'][1] != site:
             parent = parent[_PARENT]
         bp_left = parent[_VALUE]['break_point'][0]
         parent[_VALUE]['break_point'] = (bp_left, new_right)
     else:
         new_left = node[_VALUE]['break_point'][0]
+        print("was left" + str(predecessor[_PARENT][_VALUE]['break_point']))
         node[:] = node[_LEFT]
+        print("was left" + str(parent[_VALUE]['break_point']))
+        print("was left" + str(node[_VALUE]['point']))
+        print("was left" + str(node[_PARENT][_VALUE]['point']))
+        print("was left" + str(predecessor[_PARENT][_VALUE]['break_point']))
+        node[_PARENT] = parent
+        predecessor[_PARENT] = parent
+        print("was left" + str(node[_PARENT][_VALUE]['break_point']))
+        print("was left" + str(predecessor[_PARENT][_VALUE]['break_point']))
         # skip original grandparent
         parent = parent[_PARENT]
         while parent[_VALUE]['break_point'][0] != site:
@@ -122,11 +141,14 @@ def handle_circle(site):
 
     # check new arc triples
     # Former left in the middle
+    print("left1" + str(predecessor[_PARENT][_VALUE]['break_point']))
+
     left1 = beach_line.pred(predecessor)
     right1 = beach_line.succ(predecessor)
     circle_event = beach_line._get_circle_event(left1[_VALUE]['point'],
                                                 predecessor[_VALUE]['point'],
-                                                right1[_VALUE]['point'], site[0][1])
+                                                right1[_VALUE]['point'],
+                                                site[1])
     if circle_event is not None:
         circle_event_site = (circle_event[0], predecessor)
         predecessor[_VALUE]['radius'] = circle_event[1]
@@ -139,7 +161,8 @@ def handle_circle(site):
     right2 = beach_line.succ(successor)
     circle_event = beach_line._get_circle_event(left2[_VALUE]['point'],
                                                 successor[_VALUE]['point'],
-                                                right2[_VALUE]['point'])
+                                                right2[_VALUE]['point'],
+                                                site[1])
     if circle_event is not None:
         circle_event_site = (circle_event[0], successor)
         successor[_VALUE]['radius'] = circle_event[1]
@@ -160,9 +183,12 @@ if __name__ == '__main__':
     pointList = []
     import random
 
-    for a in range(0,200):
-        pointList.append(((random.randint(0,1000), random.randint(0,1000)), None))
+    #for a in range(0,200):
+    #    pointList.append(((random.randint(0,1000), random.randint(0,1000)), None))
 
+    pointList.append(((8,12), None))
+    pointList.append(((16,9), None))
+    pointList.append(((3,5), None))
     sites = PriorityQueue(pointList[:200])
 
 
