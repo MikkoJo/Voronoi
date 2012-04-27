@@ -25,26 +25,28 @@ class PriorityQueue(object):
 
     def add(self, item):
         # Check for duplicate
-        if item in self.entries:
+        if item[0] in self.entries:
             return
 
         count = next(self.counter)
         # use negative y-coordinate as a primary key
         # heapq in python is min-heap and we need max-heap
+        print("heapAdd: " + str(item[0]))
         entry = [item[0][1]*-1, count, item]
-        self.entries[item] = entry
+        self.entries[item[0]] = entry
         heapq.heappush(self.heap, entry)
 
     def pop(self):
         while self.heap:
             temp = heapq.heappop(self.heap)
-            #print "p" + str(temp[2])
+            print "pop" + str(temp[2][0])
             if not temp[2] == 'DELETED':
-                del self.entries[temp[2]]
+                del self.entries[temp[2][0]]
                 return temp[2]
         raise KeyError('pop from an empty priority queue')
 
     def delete(self, item):
-        entry = self.entries.pop(item)
+        print ("delete: " + str(item[0]))
+        entry = self.entries.pop(item[0])
         entry[2] = 'DELETED'
 

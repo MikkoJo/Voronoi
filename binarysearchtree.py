@@ -52,7 +52,8 @@ from dcel import Hedge
 
 _LEFT = 0
 _RIGHT = 1
-_VALUE = 2
+_PARENT = 2
+_VALUE = 3
 _SORT_KEY = -1
 
 class BinarySearchTree(object):
@@ -83,7 +84,7 @@ class BinarySearchTree(object):
     # Public Methods
     #/////////////////////////////////////////////////////////////////
 
-    def insert(self, item, pq):
+    def insert(self, item, pq, edge_list):
         """
         Insert the specified item into the BST.
         """
@@ -107,17 +108,18 @@ class BinarySearchTree(object):
             # Save parent node
             #parent = node
             traversed.append(node)
+            #print("breakTEST: " + str(site_x < node[_SORT_KEY](node[_VALUE], site_y)))
             if site_x < node[_SORT_KEY](node[_VALUE], site_y):
                 print("left: "),
                 print (site_x < node[_SORT_KEY](node[_VALUE], site_y))
                 node = node[_LEFT]
             else:
-                print(right)
+                print("rightright")
                 node = node[_RIGHT]
         #split the node
         if node == []:
             print ("root")
-            node[:] = [[], [], new_value, self._sort_key]
+            node[:] = [[], [], None, new_value, self._sort_key]
             return
         else:
             traversed.append(node)
@@ -126,39 +128,46 @@ class BinarySearchTree(object):
         #delete circle event from queue
         if node[_VALUE]['pointer'] is not None:
             pq.delete(node[_VALUE]['pointer'])
+            node[_VALUE]['pointer'] = None
         left_value = node[_VALUE]
 #        print ("left_value: " + str(left_value))
         hedge1 = Hedge()
         hedge2 = Hedge()
         hedge1.twin = hedge2
         hedge2.twin = hedge1
+        edge_list.hedges.append(hedge1)
+        edge_list.hedges.append(hedge2)
 #        face1 = Face()
 #        face1.wedge = hedge1
         #grand_parent = parent
         node[_VALUE] = {'point': None, 'break_point' : (left_value['point'], item), 'hedge': hedge1}
-#        print ("left_value: " + str(left_value))
+        print ("left_value: " + str(left_value))
         parent = node
         node = node[_LEFT]
-        node[:] = [[], [], left_value, self._sort_key]
+        print ("traveverse" + str(parent == node))
+        node[:] = [[], [], parent, left_value, self._sort_key]
         # Save node for circle event check
         left1 = left_value['point']
+        left_node = node
 #        print ("left_value1: " + str(left1[_VALUE]))
 #        print ("left_value1: " + str(left1[_VALUE]['break_point'][0]))
 #        print ("left_value1: " + str(left1))
+        print ("parent_value: " + str(parent[_VALUE]))
 
         node = parent[_RIGHT]
-        node[:] = [[], [], {'point': None, 'break_point' : (item, left_value['point']), 'hedge': hedge2}, self._sort_key]
+        node[:] = [[], [], parent, {'point': None, 'break_point' : (item, left_value['point']), 'hedge': hedge2}, self._sort_key]
         parent = node
 #        print ("left_value: " + str(left_value))
 
         node = node[_LEFT]
-        node[:] = [[], [], new_value, self._sort_key]
+        node[:] = [[], [], parent, new_value, self._sort_key]
         # Save node for circle event check
         new_node = node
         node = parent[_RIGHT]
-        node[:] = [[], [], left_value, self._sort_key]
+        node[:] = [[], [], parent, left_value, self._sort_key]
         # Save node for circle event check
         right1 = left1
+        right_node = node
 
         # Check for new circle events
         # there has to be a better way to find the triplet
@@ -171,36 +180,49 @@ class BinarySearchTree(object):
         print ("before left")
         print (n[_VALUE]['break_point'][0])
         print (left_value['point'])
-        while traversed and n[_VALUE]['break_point'][0] == left_value['point']:
+        while traversed and n[_VALUE]['break_point'][0] == left1:
             #print (n[_VALUE]['break_point'][0])
+            print("pop LEFT")
             n = traversed.pop()
-            pass
+            #pass
         if traversed:
             left2 = n[_VALUE]['break_point'][0]
             print ("left_value2: " + str(left2))
             print ("left_value1: " + str(left1))
             print ("new_node: " + str(new_node[_VALUE]['point']))
-            circle_event = self._get_circle_event(left2, left1, new_node[_VALUE]['point'])
+            circle_event = self._get_circle_event(left2, left1, new_node[_VALUE]['point'], site_y)
             if circle_event is not None:
-                left1['pointer'] = circle_event
+                circle_event_site = (circle_event[0], (left_node))
+                left_node[_VALUE]['radius'] = circle_event[1]
+                #print(type(circle_event_site))
+                #print (circle_event_site)
+                left_node[_VALUE]['pointer'] = circle_event_site
+                pq.add(circle_event_site)
 
         # find the rightmost arc of the triplet
         n = traversed_right.pop()
+        # Get rid of the original splitted node
+        if traversed_right:
+            n = traversed_right.pop()
         print ("before right")
         print (n[_VALUE]['break_point'][1])
         print (left_value['point'])
-        while traversed_right and n[_VALUE]['break_point'][1] == left_value['point']:
+        while traversed_right and n[_VALUE]['break_point'][1] == right1:
             n = traversed_right.pop()
-            pass
+            #pass
         if traversed_right:
             right2 = n[_VALUE]['break_point'][1]
             print ("right_value2: " + str(right2))
             print ("right_value1: " + str(right1))
             print ("new_node: " + str(new_node[_VALUE]['point']))
 #            circle_event = self._get_circle_event(right2, right1, new_node)
-            circle_event = self._get_circle_event(new_node[_VALUE]['point'], right1, right2)
+            circle_event = self._get_circle_event(new_node[_VALUE]['point'], right1, right2, site_y)
             if circle_event is not None:
-                right1['pointer'] = circle_event
+                circle_event_site = (circle_event[0], right_node)
+                right_node[_VALUE]['radius'] = circle_event[1]
+                #print(type(circle_event_site))
+                right_node[_VALUE]['pointer'] = circle_event_site
+                pq.add(circle_event_site)
 
         #if(self._get_circle_event(left2, left1, new_node)) is not None:
 
@@ -215,6 +237,33 @@ class BinarySearchTree(object):
 #        else:
 #            node[:] = [[], [], value, self._sort_key]
         #self._len += 1
+    def pred(self, node):
+        print("pred")
+        site = node[_VALUE]['point']
+        #print(node[_VALUE]['point'] == node[_PARENT][_VALUE]['break_point'][0])
+        #node = node[_PARENT]
+        #print(node[_VALUE]['point'] == node[_PARENT][_VALUE]['point'])
+        while node[_PARENT][_VALUE]['break_point'][0] == site:
+            print("go up" + str(node[_PARENT][_VALUE]['break_point'][1]))
+            node = node[_PARENT]
+        node = node[_PARENT][_LEFT]
+        #print(node)
+        while node[_VALUE]['break_point'] is not None:
+            print("go_down" + str(node[_PARENT][_VALUE]['break_point'][1]))
+            node = node[_RIGHT]
+        #print node[_VALUE]['point']
+        print ("return" + str(node[_VALUE]['point']))
+        return node
+
+    def succ(self, node):
+        site = node[_VALUE]['point']
+        #node = node[_PARENT]
+        while node[_PARENT][_VALUE]['break_point'][1] == site:
+            node = node[_PARENT]
+        node = node[_PARENT][_RIGHT]
+        while node[_VALUE]['break_point'] is not None:
+            node = node[_LEFT]
+        return node
 
     def minimum(self):
         """
@@ -442,13 +491,15 @@ class BinarySearchTree(object):
         bp2 = (-b - math.sqrt(determinant))/2*a
         print(max(bp1,bp2))
         if y1 < y2:
+            print("max" + str(max(bp1,bp2)))
             return max(bp1, bp2)
         else:
+            print("min: " + str(min(bp1,bp2)))
             return min(bp1,bp2)
 #        return ((inner_node['break_point'][0][0] - inner_node['break_point'][1][0])/2)
 
     #Calculate possible circle event, if found return lowest point else None
-    def _get_circle_event(self, site1, site2, site3):
+    def _get_circle_event(self, site1, site2, site3, ly):
 #        x1 = site1['point'][0][0]
 #        y1 = site1['point'][0][1]
 #        x2 = site2['point'][0][0]
@@ -465,19 +516,27 @@ class BinarySearchTree(object):
         y2 = site2[1]
         x3 = site3[0]
         y3 = site3[1]
+        if x1 == x2 and x2 == x3:
+            return None
+        if y1 == y2 and y2 == y3:
+            return None
         a = x2*x2 - x1*x1 + y2*y2 - y1*y1
         b = x3*x3 - x2*x2 + y3*y3 - y2*y2
+        print ("CIRCLE: a:" + str(a) + ": b: " + str(b))
         dx1 = x1 - x2
         dx2 = x3 - x2
         dy1 = y2 - y1
         dy2 = y3 - y2
+        print ("dx1: " + str(dx1) + " dx2: " + str(dx2) + " dy1: " + str(dy1) + " dy2: " + str(dy2))
 
-        k = (a + (2*dx1*b/2*dx2)) * (1/2*dy1 - (2*dx2/4*dx1*dy2))
+        k = (a + ((2*dx1*b)/(2*dx2))) * (1/(2*dy1) - ((2*dx2)/(4*dx1*dy2)))
         h = (b + 2*dy2*k)/(2*dx2)
         r = math.sqrt((math.pow(x1-h, 2) + math.pow(y1-k, 2)))
+        print ("k: " + str(k) + " h: " + str(h) + " r: " + str(r) + " h-r: " + str(h-r))
         # Check converge (www.mail-archive.com/algogeeks@googlegroups.com/msg02478.html)
-        if ((x2-x1)*(y3-y1)) - ((x3-x1)*(y2-y1)) > 0:
-            return (k, h-r)
+        if ((x2-x1)*(y3-y1)) - ((x3-x1)*(y2-y1)) > 0 and ly > h-r:
+            print ("converge: " + str(k) + ", " + str(h-r))
+            return ((k, h-r), r)
         else:
             return None
 
