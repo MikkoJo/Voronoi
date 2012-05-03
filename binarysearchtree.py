@@ -480,7 +480,7 @@ class BinarySearchTree(object):
 
     def _get_breakpoint(self, inner_node, yl):
         #debug
-        #print("_get_breakpoint")
+        print("_get_breakpoint")
         #print(inner_node)
         #print(inner_node['break_point'][0][0])
         #print(inner_node['break_point'][1][0])
@@ -488,19 +488,57 @@ class BinarySearchTree(object):
         y1 = inner_node['break_point'][0][1]
         x2 = inner_node['break_point'][1][0]
         y2 = inner_node['break_point'][1][1]
-        a1 = y1 - yl
-        b1 = 2*x2*a1
-        c1 = a1*(x2*x2 + y2*y2 - yl*yl)
-        a2 = y2 - yl
-        b2 = 2*x1*a2
-        c2 = a2*(x1*x1 + y1*y1 - yl*yl)
-        a = a2-a1
-        b = b1-b2
-        c = c2-c1
+#        print (x1)
+#        print (y1)
+#        print (x2)
+#        print (y2)
+        # check if y coordinates are equal, then breakpoint in the middle
+        if y1 == y2:
+            return (x1+x2)/2.0
+
+#        k1 = (y1+yl)/2.0
+#        p1 = (y1-yl)/2.0
+#        k2 = (y2+yl)/2.0
+#        p2 = (y2-yl)/2.0
+#        print(type(k1))
+#        print (k1)
+#        print (p1)
+#        print (k2)
+#        print (p2)
+
+#        at = p2-p1
+#        bt = (2*p1*x2*x2) - (2*p2*x1*x1)
+#        ct = (4*p1*p2)*((k1 - k2))
+        a = (y2-y1)/2.0
+        b = ((x2)*(y1-yl)) - ((x1)*(y2-yl))
+        c = ((y1*y1*y2)-(y2*yl*yl)-(y1*y1*yl)-(y2*y2*y1)+(y1*yl*yl)+(y2*y2*yl)+(y2*x1*x1)-(yl*x1*x1)-(y1*x2*x2)+(yl*x2*x2))/2.0
+#        print (a)
+#        print (b)
+#        print (c)
+#        print (at)
+#        print (bt)
+#        print (ct)
+        # This is wrong
+        #a1 = y1 - yl
+        #b1 = 2*x2*a1
+        #c1 = a1*(x2*x2 + y2*y2 - yl*yl)
+        #a2 = y2 - yl
+        #b2 = 2*x1*a2
+        #c2 = a2*(x1*x1 + y1*y1 - yl*yl)
+        #a = a2-a1
+        #b = b1-b2
+        #c = c2-c1
         determinant = b*b - 4 *a*c
-        bp1 = (-b + math.sqrt(determinant))/2*a
-        bp2 = (-b - math.sqrt(determinant))/2*a
-        print(max(bp1,bp2))
+        bp1 = (-b + math.sqrt(determinant))/(2*a)
+        bp2 = (-b - math.sqrt(determinant))/(2*a)
+#       determinantt = bt*bt - 4 *at*ct
+#       bp1t = (-bt + math.sqrt(determinantt))/(2*at)
+#       bp2t = (-bt - math.sqrt(determinantt))/(2*at)
+#       print (bp1)
+#       print (bp2)
+#       print (bp1t)
+#       print (bp2t)
+        #print(max(bp1,bp2))
         if y1 < y2:
             print("max" + str(max(bp1,bp2)))
             return max(bp1, bp2)

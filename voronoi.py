@@ -181,7 +181,7 @@ if __name__ == '__main__':
     pointList = parse_input(sys.argv[1])
 
     pointList = []
-    import random
+    #import random
 
     #for a in range(0,200):
     #    pointList.append(((random.randint(0,1000), random.randint(0,1000)), None))
@@ -189,6 +189,7 @@ if __name__ == '__main__':
     pointList.append(((8,12), None))
     pointList.append(((16,9), None))
     pointList.append(((3,5), None))
+    pointList.append(((6,1), None))
     sites = PriorityQueue(pointList[:200])
 
 
